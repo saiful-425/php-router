@@ -20,6 +20,7 @@ class Router
 
     public static function get($pattern, $callback)
     {
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') return;
         $pattern = "~^{$pattern}/?$~";
         $params = self::getMatches($pattern);
         if ($params) {
@@ -31,6 +32,10 @@ class Router
         }
     }
 
+    public static function post()
+    {
+
+    }
     public static function cleanup()
     {
         if (self::$noMatch) {
