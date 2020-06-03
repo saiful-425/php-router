@@ -18,9 +18,8 @@ class Router
         return false;
     }
 
-    public static function get($pattern, $callback)
+    private static function process($pattern, $callback)
     {
-        if ($_SERVER['REQUEST_METHOD'] != 'GET') return;
         $pattern = "~^{$pattern}/?$~";
         $params = self::getMatches($pattern);
         if ($params) {
@@ -32,10 +31,24 @@ class Router
         }
     }
 
-    public static function post()
+    public static function get($pattern, $callback)
     {
-
+        if ($_SERVER['REQUEST_METHOD'] != 'GET') return;
+        self::process($pattern, $callback);
     }
+
+    public static function post($pattern, $callback)
+    {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') return;
+        self::process($pattern, $callback);
+    }
+
+    public static function delete($pattern, $callback)
+    {
+        if ($_SERVER['REQUEST_METHOD'] != 'DELETE') return;
+        self::process($pattern, $callback);
+    }
+
     public static function cleanup()
     {
         if (self::$noMatch) {
