@@ -23,10 +23,23 @@ class Router
         $pattern = "~^{$pattern}/?$~";
         $params = self::getMatches($pattern);
         if ($params) {
+            $functionArguments = array_slice($params, 1);
+            self::$noMatch = false;
             if (is_callable($callback)) {
-                self::$noMatch = false;
-                $functionArguments = array_slice($params, 1);
-                $callback(...$functionArguments);
+                if (is_array($callback)) {
+                    $className = $callback[0];
+                    $methodName = $callback[1];
+                    $instance = $className::getInstance();
+                    $instance->$methodName(...$functionArguments);
+                } else {
+                    $callback(...$functionArguments);
+                }
+            } else {
+                $parts = explode('@', $callback);
+                $className = "OurApplication\Controller\\" . $parts[0];
+                $methodName = $parts[1];
+                $instance = $className::getInstance();
+                $instance->$methodName(...$functionArguments);
             }
         }
     }
